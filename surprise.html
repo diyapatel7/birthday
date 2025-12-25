@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For You 💛</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Playfair Display', serif;
+      background: #fff1eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      overflow-x: hidden;
+      perspective: 1000px;
+    }
+
+    .bg-aura {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%);
+      opacity: 0.6;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-radius: 30px;
+      padding: 40px 30px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      transform-style: preserve-3d;
+      transition: transform 0.1s ease-out;
+    }
+
+    h1 { font-size: 2.8rem; margin-bottom: 15px; color: #ff5c5c; text-shadow: 2px 2px 4px rgba(0,0,0,0.05); }
+    h2 { margin: 30px 0 15px; font-size: 1.8rem; color: #444; }
+    p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 20px; color: #555; }
+
+    /* --- ENHANCED CAKE & REALISTIC BLOWING --- */
+    .cake-container { 
+      position: relative; 
+      width: 120px; 
+      height: 120px; 
+      margin: 20px auto; 
+      cursor: pointer; 
+      filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1)); 
+      user-select: none;
+    }
+    .cake { position: absolute; bottom: 0; width: 120px; height: 60px; background: #f4d03f; border-radius: 12px 12px 4px 4px; }
+    .icing { position: absolute; top: -12px; width: 120px; height: 25px; background: #ff7a7a; border-radius: 25px; }
+    .candle { position: absolute; top: -35px; left: 54px; width: 12px; height: 35px; background: #ace0f9; border-radius: 4px; }
+    
+    .flame { 
+        position: absolute; top: -20px; left: 1px; width: 10px; height: 18px; 
+        background: radial-gradient(circle at bottom, #fff, #ffd166, #ff5c5c);
+        border-radius: 50% 50% 20% 20%;
+        box-shadow: 0 0 20px #ff5c5c, 0 0 40px #ffd166;
+        animation: realisticFlicker 0.15s infinite alternate;
+        transform-origin: bottom;
+        transition: opacity 0.3s;
+    }
+
+    /* Animation when holding to blow */
+    .flame-blowing {
+      animation: blowIntensity 0.2s infinite !important;
+    }
+
+    @keyframes blowIntensity {
+      0% { transform: scale(1, 1.2) rotate(-5deg) skewX(10deg); opacity: 0.8; }
+      100% { transform: scale(0.8, 0.5) rotate(5deg) skewX(-20deg); opacity: 0.4; }
+    }
+
+    @keyframes realisticFlicker {
+      0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+      100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+    }
+
+    #smoke {
+      position: absolute; top: -40px; left: 50%; width: 2px; height: 0px;
+      background: rgba(200, 200, 200, 0.5); filter: blur(4px); transition: 2s; opacity: 0;
+    }
+    .smoke-active { height: 40px !important; transform: translateY(-30px) translateX(10px); opacity: 1 !important; }
+
+    /* --- END CAKE SECTION --- */
+
+    .sparkle { position: fixed; pointer-events: none; z-index: 999; font-size: 14px; animation: sparkleFade 1s forwards; }
+    @keyframes sparkleFade { to { transform: translateY(-30px) scale(1.5); opacity: 0; } }
+
+    .note { 
+        font-family: 'Patrick Hand', cursive; 
+        background: rgba(255, 248, 220, 0.6);
+        backdrop-filter: blur(5px);
+        padding: 20px; border-radius: 20px; margin: 15px 0; 
+        cursor: pointer; border: 1px solid rgba(255,255,255,0.4);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .note:hover { transform: translateY(-5px) scale(1.02); background: rgba(255, 248, 220, 0.9); }
+    
+    .envelopes { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+    .envelope { 
+        background: rgba(252, 226, 228, 0.8); border-radius: 20px; padding: 25px; 
+        cursor: pointer; font-family: 'Patrick Hand', cursive; font-size: 1.2rem;
+        border: 1px solid white; transition: all 0.4s;
+    }
+    .envelope:hover { background: #ff7a7a; color: white; transform: translateY(-10px) rotate(2deg); }
+
+    .music-btn { 
+        position: fixed; top: 20px; right: 20px; 
+        background: white; border: 1px solid rgba(0,0,0,0.1); 
+        padding: 12px 20px; border-radius: 50px; cursor: pointer; z-index: 100;
+        font-family: 'Patrick Hand', cursive; transition: 0.3s;
+    }
+
+    .hidden { display: none; opacity: 0; }
+    canvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 100; }
+  </style>
+</head>
+<body>
+
+<div class="bg-aura"></div>
+<canvas id="canvas"></canvas>
+<audio id="bgMusic" loop><source src="music.mp3" type="audio/mpeg"></audio>
+
+<button class="music-btn" onclick="toggleMusic()">🎵 Play Magic Music</button>
+
+<div class="container" id="card">
+  <h1>Happy Birthday! 🎂</h1>
+  
+  <div class="cake-container" 
+       onmousedown="startBlowing()" 
+       onmouseup="stopBlowing()" 
+       ontouchstart="startBlowing()" 
+       ontouchend="stopBlowing()">
+    <div class="cake">
+      <div class="icing"></div>
+      <div class="candle">
+        <div class="flame" id="cake-flame"></div>
+        <div id="smoke"></div>
+      </div>
+    </div>
+    <p id="instruction" style="font-family: 'Patrick Hand', cursive; font-size: 0.9rem; margin-top: 140px; color: #888;">
+      Hold down on the cake to "blow" out the candle! 🌬️
+    </p>
+  </div>
+  
+  <div id="countdown" style="font-family: 'Patrick Hand', cursive; color: #ff5c5c; font-size: 1.4rem; margin: 15px 0;"></div>
+
+  <p>I know I don't always express everything every day, so today I decided to write it down — so you'd know what you truly are to me.</p>
+
+  <h2>Little Notes for You 💌</h2>
+  <div class="note" onclick="reveal(this)">
+      Tap to reveal a secret 🌼
+      <div class="hidden" style="margin-top:15px; color:#d63384; font-size: 1.3rem;">You are my comfort, even on days we don't talk much.</div>
+  </div>
+  <div class="note" onclick="reveal(this)">
+      Tap for one more 🌙
+      <div class="hidden" style="margin-top:15px; color:#d63384; font-size: 1.3rem;">No matter how far life takes us, you will always feel like home.</div>
+  </div>
+
+  <h2>Open When Letters ✉️</h2>
+  <div class="envelopes">
+    <div class="envelope" onclick="showPopup('miss')">Open when you miss me</div>
+    <div class="envelope" onclick="showPopup('sad')">Open when you are sad</div>
+    <div class="envelope" onclick="showPopup('happy')">Open when you are happy</div>
+  </div>
+  
+  <footer style="margin-top:40px; opacity:0.5; font-size: 0.9rem;">Made with all my heart 💛</footer>
+</div>
+
+<script>
+  // 1. Interactive 3D Tilt Effect
+  const card = document.getElementById('card');
+  document.addEventListener('mousemove', (e) => {
+    const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+    const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+    card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+  });
+
+  // 2. Cursor Sparkle Trail
+  document.addEventListener('mousemove', (e) => {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.innerHTML = ['✨', '💖', '⭐', '🌸'][Math.floor(Math.random() * 4)];
+    sparkle.style.left = e.clientX + 'px';
+    sparkle.style.top = e.clientY + 'px';
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1000);
+  });
+
+  // 3. Physics Confetti
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize); resize();
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height - canvas.height;
+      this.size = Math.random() * 8 + 4;
+      this.weight = Math.random() * 2 + 1;
+      this.directionX = Math.random() * 3 - 1.5;
+      this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+    }
+    update() {
+      this.y += this.weight;
+      this.x += this.directionX;
+      if (this.y > canvas.height) { this.y = -10; this.x = Math.random() * canvas.width; }
+    }
+    draw() {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < 100; i++) particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+
+  // 4. Realistic Blow Logic
+  let blowTimer;
+  let isBlownOut = false;
+
+  function startBlowing() {
+    if (isBlownOut) return;
+    const flame = document.getElementById('cake-flame');
+    const instruction = document.getElementById('instruction');
+    
+    flame.classList.add('flame-blowing');
+    instruction.innerText = "Keep blowing... ✨";
+
+    blowTimer = setTimeout(() => { extinguishCandle(); }, 1500);
+  }
+
+  function stopBlowing() {
+    if (isBlownOut) return;
+    clearTimeout(blowTimer);
+    const flame = document.getElementById('cake-flame');
+    const instruction = document.getElementById('instruction');
+    
+    flame.classList.remove('flame-blowing');
+    instruction.innerText = "Almost! Hold it longer to blow it out. 🌬️";
+  }
+
+  function extinguishCandle() {
+    isBlownOut = true;
+    const flame = document.getElementById('cake-flame');
+    const smoke = document.getElementById('smoke');
+    const instruction = document.getElementById('instruction');
+
+    flame.style.opacity = '0';
+    setTimeout(() => { flame.style.display = 'none'; }, 300);
+    
+    smoke.classList.add('smoke-active');
+    instruction.innerHTML = "<strong>Make a wish! ✨🌌</strong>";
+    
+    setTimeout(() => {
+        alert("Your wish has been sent to the stars! ✨🌌 Happy Birthday!");
+        initParticles(); // Reset confetti for a fresh burst
+    }, 600);
+  }
+
+  function reveal(el) {
+    const secret = el.querySelector('.hidden');
+    secret.style.display = 'block';
+    setTimeout(() => secret.style.opacity = '1', 10);
+  }
+
+  function showPopup(type) {
+    const msgs = {
+        miss: "I’m probably missing you at this exact same moment. Sending you a huge hug through the screen until I can give you a real one.❤️",
+        sad: "If the world feels a bit gray today, let me be your sunshine. I believe in you more than anyone else. ☀️",
+        happy: "You’re glowing! I love it when you’re in your element. Keep shining, because you truly light up my life.✨"
+    };
+    alert(msgs[type]);
+  }
+
+  const music = document.getElementById('bgMusic');
+  function toggleMusic() {
+    if (music.paused) music.play();
+    else music.pause();
+  }
+
+  // 5. Countdown Logic (Calgary Time)
+  const target = new Date('2025-12-25T00:00:00');
+  function updateTimer() {
+    const now = new Date();
+    const calgaryNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/Edmonton' }));
+    const diff = target - calgaryNow;
+    const el = document.getElementById('countdown');
+    
+    if (diff <= 0) { el.innerHTML = "🎉 The Magic is Here! 🎉"; return; }
+    
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+    el.innerText = `${d}d : ${h}h : ${m}m : ${s}s left of waiting...`;
+  }
+
+  window.onload = () => {
+    initParticles();
+    animate();
+    setInterval(updateTimer, 1000);
+    updateTimer();
+  };
+</script>
+</body>
+</html>
